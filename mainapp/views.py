@@ -22,7 +22,7 @@ def fetch_stock(stock):
                 "price": info.get("lastPrice"),
                 "open": round(info.get("open", 0), 2),
                 "previousClose":info.get("previousClose"),
-                "marketCap": info.get("marketCap"),
+                "marketCap": info.get("marketCap"),   #need to format this as not in human readable format
                 "volume": info.get("lastVolume"),
             }
         }

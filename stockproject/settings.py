@@ -37,7 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'mainapp'
+    'mainapp',
+    'django_celery_results', #to see status of all the task allocated to celery successful,failed ,everything
+    'django_celery_beat',
 ]
 #from yfinance i am taking data and every refresh api call is going to avoid this for now i am this cache
 CACHES = {
@@ -122,3 +124,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Celery Settings
+CELERY_BROKER_URL  = 'redis://127.0.0.1:6379' #This tells Celery:“Where is Redis?”
+CELERY_ACCEPT_CONTENT = ['application/json'] #Celery says:“I only understand JSON messages.” provides Security + consistency.
+CELERY_RESULT_SERIALIZER = 'json' #After task finishes:Celery converts result into JSON before storing.
+CELERY_TASK_SERIALIZER = 'json' #Before sending task to Redis:Celery converts Python objects → JSON.
+CELERY_TIMEZONE = 'Asia/Kolkata' #Celery Beat needs timezone for schedules.Otherwise:Tasks may run at wrong time
+
+CELERY_RESULT_BACKEND = 'django-db' #This tells Celery:“Store task results in Django database.”
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler' #This tells Beat:“Store schedules inside database.”instead of hardcoded Python dictionary.
