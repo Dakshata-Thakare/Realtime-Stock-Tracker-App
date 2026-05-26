@@ -1,0 +1,9 @@
+#need to update req file 
+pandas
+requests
+requests-html
+feedparser
+yfinance
+lxml
+html5lib
+beautifulsoup4
