@@ -49,4 +49,4 @@ def stockTracker(request):
             data.update(result)
 
     # print("data is ",data)
-    return render(request,"mainapp/stocktracker.html",{'data':data})
+    return render(request,"mainapp/stocktracker.html",{'data':data,'room_name':'track'})

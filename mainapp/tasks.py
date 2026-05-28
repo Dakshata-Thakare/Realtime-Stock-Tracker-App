@@ -4,7 +4,8 @@ from celery import shared_task
 # from yahoo_fin.stock_info import *
 from nselib import indices
 from .views import fetch_stock   #later remove this business logic function to another as it is common and not good to write in views
-
+from channels.layers import get_channel_layer
+import asyncio
 
 @shared_task(bind=True) #This tells Celery:"Register this as async task"
 #bind =true ---->Give task object access to self
@@ -25,4 +26,16 @@ def update_stock(self,stockpicker):
         results = executor.map(fetch_stock, validated_stocks)
         for result in results:
             data.update(result)
+    
+    #send data to group
+    channel_layer = get_channel_layer()
+    loop = asyncio.new_event_loop()
+
+    asyncio.set_event_loop(loop)
+    # print("data::::::::::: ",data)
+    loop.run_until_complete(channel_layer.group_send("stock_track",{
+        'type':'send_stock_update',
+        'message':data,
+    }))
+    
     return "DONE"

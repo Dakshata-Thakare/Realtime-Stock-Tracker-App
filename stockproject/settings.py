@@ -36,10 +36,12 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'daphne',
     'django.contrib.staticfiles',
     'mainapp',
     'django_celery_results', #to see status of all the task allocated to celery successful,failed ,everything
     'django_celery_beat',
+    'channels'
 ]
 #from yfinance i am taking data and every refresh api call is going to avoid this for now i am this cache
 CACHES = {
@@ -50,6 +52,7 @@ CACHES = {
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -76,6 +79,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'stockproject.wsgi.application'
+ASGI_APPLICATION = "stockproject.asgi.application"
 
 
 # Database
@@ -124,6 +128,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Celery Settings
 CELERY_BROKER_URL  = 'redis://127.0.0.1:6379' #This tells Celery:“Where is Redis?”
@@ -134,3 +139,15 @@ CELERY_TIMEZONE = 'Asia/Kolkata' #Celery Beat needs timezone for schedules.Other
 
 CELERY_RESULT_BACKEND = 'django-db' #This tells Celery:“Store task results in Django database.”
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler' #This tells Beat:“Store schedules inside database.”instead of hardcoded Python dictionary.
+
+#channel layer--Redis acts like:MESSAGE HUB
+#WHY REDIS?
+#Because:WebSocket server,Celery worker,Channels all are separate processes.They need communication.Redis helps them talk.
+CHANNEL_LAYERS = {
+    'default' : {
+        'BACKEND' : 'channels_redis.core.RedisChannelLayer',
+        'CONFIG':{
+            "hosts":[('127.0.0.1',6379)],
+        },
+    },
+}

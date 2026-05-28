@@ -65,9 +65,40 @@ StockTracker
   </table>
 </div>
 
-{% endblock %}
-{% block js %}
+{{ room_name | json_script:"room-name" }}
 <script>
+    const roomName = JSON.parse(
+        document.getElementById('room-name').textContent
+    );
+    var queryString = window.location.search;
+    const stockSocket = new WebSocket(
+        'ws://' +
+        window.location.host +
+        '/ws/stock/' +
+        roomName +
+        '/' +
+        queryString
+    );
 
+    stockSocket.onopen = function(e){
+        console.log("✅ WebSocket Connected");
+    }
+
+    stockSocket.onmessage = function(e){
+        console.log("📩 Message:", e.data);
+        const data = JSON.parse(e.data);
+        console.log(data);
+    }
+
+    stockSocket.onerror = function(e){
+        console.log("❌ Error:", e);
+    }
+
+    stockSocket.onclose = function(e){
+        console.log("🔴 Closed");
+    }
 </script>
+{% endblock body %}
+
+{% block js %}
 {% endblock %}
