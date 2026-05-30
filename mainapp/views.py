@@ -6,6 +6,13 @@ from nselib import indices
 from . import constants
 import time
 import yfinance as yf
+from asgiref.sync import sync_to_async
+
+@sync_to_async
+def checkAuthenticated(request):
+    if not request.user.is_authenticated:
+        return False
+    return True
 
 def stockPicker(request):
     stock_picker = (indices.constituent_stock_list(index_category='BroadMarketIndices',index_name='Nifty 50')
@@ -29,7 +36,11 @@ def fetch_stock(stock):
     except Exception as e:
         return {stock: {"error": str(e)}}
     
-def stockTracker(request):
+async def stockTracker(request):
+    is_loginned = await checkAuthenticated(request)
+    if not is_loginned:
+        return HttpResponse("First login...")
+    
     stockpicker = request.GET.getlist('stockpicker')
     data = {}
     available_stocks = indices.constituent_stock_list(index_category='BroadMarketIndices',index_name='Nifty 50')

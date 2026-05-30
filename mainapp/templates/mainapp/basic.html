@@ -61,6 +61,20 @@
             </div>
         </div>
     </nav>
+    <div class="toggle-container container">
+        <label class="switch">
+            <input type="checkbox">
+            <span id="toggle" class="slider round"></span>
+        </label>
+    </div>
+    <script>
+        var button = document.getElementById('toggle');
+        button.onclick = function(){
+            document.body.classList.toggle("dark-theme");
+        }
+    </script>
+
+
     {% block body %}
     {% endblock %}
 
